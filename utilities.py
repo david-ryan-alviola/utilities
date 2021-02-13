@@ -1,4 +1,4 @@
-def evaluate_hypothesis_ttest(null_hypothesis, alternative_hypothesis, p_value, t_value, alpha = .05, tails = "two"):
+def evaluate_hypothesis_ttest(p_value, t_value, alpha = .05, tails = "two", null_hypothesis = "", alternative_hypothesis = ""):
     """
     Utility function to evaluate T-test hypothesis
 
@@ -6,10 +6,7 @@ def evaluate_hypothesis_ttest(null_hypothesis, alternative_hypothesis, p_value, 
 
     Parameters
     ----------
-    null_hypothesis : str
-        The null hypothesis being tested
-    alternative_hypothesis : str
-        The alternative hypothesis being tested
+
     p_value : float
         The p_value from the T-test
     t_value : float
@@ -23,11 +20,15 @@ def evaluate_hypothesis_ttest(null_hypothesis, alternative_hypothesis, p_value, 
                when examining if an increase in the value is present
             * 'less' : evaluates hypothesis with criteria for one-tailed T-test
                when examining if a decrease in the value is present
+    null_hypothesis : str, optional
+        The null hypothesis being tested. Empty string by default.
+    alternative_hypothesis : str, optional
+        The alternative hypothesis being tested. Empty string by default.
     
     Returns
     -------
-    None
-        Prints the result of the evaluation
+    bool
+        Boolean value telling if the null hypothesis can be rejected.
     """
     def fail_to_reject_null_hypothesis():
         print(f"We fail to reject the null hypothesis:  {null_hypothesis}")
@@ -43,8 +44,12 @@ def evaluate_hypothesis_ttest(null_hypothesis, alternative_hypothesis, p_value, 
 
         if p_value < alpha:
             reject_null_hypothesis()
+
+            return True
         else:
             fail_to_reject_null_hypothesis()
+
+            return False
     else:
 
         if (p_value / 2) < alpha:
@@ -52,15 +57,21 @@ def evaluate_hypothesis_ttest(null_hypothesis, alternative_hypothesis, p_value, 
             if (tails == "greater"):
                 if (t_value > 0):
                     reject_null_hypothesis()
+
+                    return True
             elif (tails == "less"):
                 if (t_value < 0):
                     reject_null_hypothesis()
+
+                    return True
             else:
                 raise ValueError("tails parameter only accepts:  'two', 'greater', 'less'")
         else:
             fail_to_reject_null_hypothesis()
 
-def generate_db_url(user, password, host, db_name):
+            return False
+
+def generate_db_url(user, password, host, db_name, protocol = "mysql+pymysql"):
     """
     Utility function for generating database URL
 
@@ -76,10 +87,12 @@ def generate_db_url(user, password, host, db_name):
         The host address for the database server
     db_name : str
         The name of the database
+    protocol : str
+        The protocol to be used. Defaults to "mysql+pymysql".
     
     Returns
     -------
     str
-        URL in this format:  mysql+pymysql://user:password@host/db_name
+        URL in this format:  protocol://user:password@host/db_name
     """
-    return f"mysql+pymysql://{user}:{password}@{host}/{db_name}"
+    return f"{protocol}://{user}:{password}@{host}/{db_name}"
