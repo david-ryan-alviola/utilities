@@ -82,5 +82,19 @@ class TestUtilityFunctions(unittest.TestCase):
         self.assertEqual(result['message'], self.fail_to_reject_null_message)
         self.assertEqual(result['correlation'], "negative")
 
+    def test_evaluate_hypothesis_pcorrelation_reject_null_no_corr(self):
+        result = utils.evaluate_hypothesis_pcorrelation(0, .04)
+
+        self.assertTrue(result['reject_null'])
+        self.assertEqual(result['message'], self.reject_null_message)
+        self.assertEqual(result['correlation'], "none")
+
+    def test_evaluate_hypothesis_pcorrelation_fail_to_reject_null_no_corr(self):
+        result = utils.evaluate_hypothesis_pcorrelation(0, .06)
+
+        self.assertFalse(result['reject_null'])
+        self.assertEqual(result['message'], self.fail_to_reject_null_message)
+        self.assertEqual(result['correlation'], "none")
+
 if __name__ == "__main__":
     unittest.main()
