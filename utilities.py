@@ -27,49 +27,64 @@ def evaluate_hypothesis_ttest(p_value, t_value, alpha = .05, tails = "two", null
     
     Returns
     -------
-    bool
-        Boolean value telling if the null hypothesis can be rejected.
+    dict
+        Contains boolean value telling if the null hypothesis can be rejected and message about the result.
     """
     def fail_to_reject_null_hypothesis():
-        print(f"We fail to reject the null hypothesis:  {null_hypothesis}")
+        return f"We fail to reject the null hypothesis:  {null_hypothesis}"
 
     def reject_null_hypothesis():
-        print("We reject the null hypothesis.")
-        print(f"We move forward with the alternative hypothesis:  {alternative_hypothesis}")
+        return f"We reject the null hypothesis. We move forward with the alternative hypothesis:  {alternative_hypothesis}"
 
+    result = {}
+
+    print("------------------------------------------")
     print(f"t:  {t_value}, p:  {p_value}, a:  {alpha}")
     print()
 
     if tails == "two":
 
         if p_value < alpha:
-            reject_null_hypothesis()
+            result['message'] = reject_null_hypothesis()
+            result['reject_null'] = True
 
-            return True
         else:
-            fail_to_reject_null_hypothesis()
+            result['message'] = fail_to_reject_null_hypothesis()
+            result['reject_null'] = False
 
-            return False
     else:
 
         if (p_value / 2) < alpha:
 
             if (tails == "greater"):
                 if (t_value > 0):
-                    reject_null_hypothesis()
+                    result['message'] = reject_null_hypothesis()
+                    result['reject_null'] = True
 
-                    return True
+                else:
+                    result['message'] = fail_to_reject_null_hypothesis()
+                    result['reject_null'] = False
+
             elif (tails == "less"):
                 if (t_value < 0):
-                    reject_null_hypothesis()
+                    result['message'] = reject_null_hypothesis()
+                    result['reject_null'] = True
+                
+                else:
+                    result['message'] = fail_to_reject_null_hypothesis()
+                    result['reject_null'] = False
 
-                    return True
             else:
                 raise ValueError("tails parameter only accepts:  'two', 'greater', 'less'")
-        else:
-            fail_to_reject_null_hypothesis()
 
-            return False
+        else:
+            result['message'] = fail_to_reject_null_hypothesis()
+            result['reject_null'] = False
+
+    print(result['message'])
+    print("------------------------------------------")
+
+    return result
 
 def generate_db_url(user, password, host, db_name, protocol = "mysql+pymysql"):
     """
@@ -96,3 +111,39 @@ def generate_db_url(user, password, host, db_name, protocol = "mysql+pymysql"):
         URL in this format:  protocol://user:password@host/db_name
     """
     return f"{protocol}://{user}:{password}@{host}/{db_name}"
+
+def evaluate_hypothesis_pcorrelation(correlation, p_value, alpha = .05, null_hypothesis = "", alternative_hypothesis = ""):
+
+    def fail_to_reject_null_hypothesis():
+        return f"We fail to reject the null hypothesis:  {null_hypothesis}"
+
+    def reject_null_hypothesis():
+        return f"We reject the null hypothesis. We move forward with the alternative hypothesis:  {alternative_hypothesis}"
+
+    print("------------------------------------------")
+    print(f"corr:  {correlation}, p:  {p_value}, a:  {alternative_hypothesis}")
+    print()
+
+    result = {}
+
+    if p_value < alpha:
+        result['reject_null'] = True
+        result['message'] = reject_null_hypothesis()
+    else:
+        result['reject_null'] = False
+        result['message'] = fail_to_reject_null_hypothesis()
+
+    if correlation > 0:
+        result['correlation'] = "positive"
+    
+    elif correlation < 0:
+        result['correlation'] = "negative"
+    
+    else:
+        result['correlation'] = "none"
+
+    print(result['message'])
+    print(f"Correlation direction:  {result['correlation']}")
+    print("------------------------------------------")
+
+    return result
