@@ -113,6 +113,29 @@ def generate_db_url(user, password, host, db_name, protocol = "mysql+pymysql"):
     return f"{protocol}://{user}:{password}@{host}/{db_name}"
 
 def evaluate_hypothesis_pcorrelation(correlation, p_value, alpha = .05, null_hypothesis = "", alternative_hypothesis = ""):
+    """
+    Utility function to evaluate T-test hypothesis
+
+    Evaluates whether or not the null hypothesis can be rejected after performing T-test analysis.
+
+    Parameters
+    ----------
+    correlation : float
+        The correlation value from the calculation
+    p_value : float
+        The p_value from the calculation
+    alpha : float, optional
+        The specified alpha value or .05 (default) if unspecified
+    null_hypothesis : str, optional
+        The null hypothesis being tested. Empty string by default.
+    alternative_hypothesis : str, optional
+        The alternative hypothesis being tested. Empty string by default.
+    
+    Returns
+    -------
+    dict
+        Contains boolean value telling if the null hypothesis can be rejected and message about the result.
+    """
 
     def fail_to_reject_null_hypothesis():
         return f"We fail to reject the null hypothesis:  {null_hypothesis}"
@@ -126,24 +149,54 @@ def evaluate_hypothesis_pcorrelation(correlation, p_value, alpha = .05, null_hyp
 
     result = {}
 
-    if p_value < alpha:
-        result['reject_null'] = True
-        result['message'] = reject_null_hypothesis()
+    if correlation > 1 or correlation < -1:
+        raise ValueError("The correlation must be between -1 and 1")
     else:
-        result['reject_null'] = False
-        result['message'] = fail_to_reject_null_hypothesis()
+        if p_value < alpha:
+            result['reject_null'] = True
+            result['message'] = reject_null_hypothesis()
+        else:
+            result['reject_null'] = False
+            result['message'] = fail_to_reject_null_hypothesis()
 
-    if correlation > 0:
-        result['correlation'] = "positive"
+        if correlation > 0:
+            result['correlation'] = "positive"
+        
+        elif correlation < 0:
+            result['correlation'] = "negative"
+        
+        else:
+            result['correlation'] = "none"
+
+        print(result['message'])
+        print(f"Correlation direction:  {result['correlation']}")
+        print("------------------------------------------")
+
+        return result
+
+def generate_csv_url(sheet_url):
+    """
+    Utility function for generating csv URL from a google sheets link
+
+    This function generates a link to a csv file from a link used to edit a google sheets file.
+    The gid must be present in the URL.
+
+    Parameters
+    ----------
+    sheet_url : str
+        The URL for the google sheet file
     
-    elif correlation < 0:
-        result['correlation'] = "negative"
-    
+    Returns
+    -------
+    str
+        URL for the csv file
+    """
+    if type(sheet_url) == str:
+
+        if(sheet_url.find("edit#gid") > -1):
+            return sheet_url.replace("edit#gid", "export?format=csv&gid")
+
+        else:
+            raise ValueError("sheet_url must contain 'edit#gid' phrase")
     else:
-        result['correlation'] = "none"
-
-    print(result['message'])
-    print(f"Correlation direction:  {result['correlation']}")
-    print("------------------------------------------")
-
-    return result
+        raise TypeError("sheet_url must be a string")
