@@ -96,5 +96,24 @@ class TestUtilityFunctions(unittest.TestCase):
         self.assertEqual(result['message'], self.fail_to_reject_null_message)
         self.assertEqual(result['correlation'], "none")
 
+    def test_evaluate_hypothesis_pcorrelation_negative(self):
+        with self.assertRaises(ValueError):
+            utils.evaluate_hypothesis_pcorrelation(-14, .06)
+        
+        with self.assertRaises(ValueError):
+            utils.evaluate_hypothesis_pcorrelation(14, .06)
+
+    def test_generate_csv_url_positive(self):
+        self.assertEqual(
+            utils.generate_csv_url("https://docs.google.com/spreadsheets/d/1Uhtml8KY19LILuZsrDtlsHHDC9wuDGUSe8LTEwvdI5g/edit#gid=341089357"), 
+            "https://docs.google.com/spreadsheets/d/1Uhtml8KY19LILuZsrDtlsHHDC9wuDGUSe8LTEwvdI5g/export?format=csv&gid=341089357")
+
+    def test_generate_csv_url_negative(self):
+        with self.assertRaises(TypeError):
+            utils.generate_csv_url(14398)
+
+        with self.assertRaises(ValueError):
+            utils.generate_csv_url("www.google.com")
+
 if __name__ == "__main__":
     unittest.main()
