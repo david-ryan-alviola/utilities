@@ -1,6 +1,9 @@
 import unittest
 import utilities as utils
 
+from unittest.mock import patch
+from pandas import read_sql
+
 class TestUtilityFunctions(unittest.TestCase):
 
     reject_null_message = "We reject the null hypothesis. We move forward with the alternative hypothesis:  "
@@ -105,8 +108,8 @@ class TestUtilityFunctions(unittest.TestCase):
 
     def test_generate_csv_url_positive(self):
         self.assertEqual(
-            utils.generate_csv_url("https://docs.google.com/spreadsheets/d/1Uhtml8KY19LILuZsrDtlsHHDC9wuDGUSe8LTEwvdI5g/edit#gid=341089357"), 
-            "https://docs.google.com/spreadsheets/d/1Uhtml8KY19LILuZsrDtlsHHDC9wuDGUSe8LTEwvdI5g/export?format=csv&gid=341089357")
+            utils.generate_csv_url("https://docs.google.com/spreadsheets/d/1Uhtml8KY19LILuZsrDtlsHHDC9wuDGUSe8LTEwvdI5g/edit#gid=1234"), 
+            "https://docs.google.com/spreadsheets/d/1Uhtml8KY19LILuZsrDtlsHHDC9wuDGUSe8LTEwvdI5g/export?format=csv&gid=1234")
 
     def test_generate_csv_url_negative(self):
         with self.assertRaises(TypeError):
@@ -114,6 +117,16 @@ class TestUtilityFunctions(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             utils.generate_csv_url("www.google.com")
+
+    # def test_generate_df_not_cached_positive(self):
+    #     utils.generate_df("file.csv", "query", cached=False)
+
+    
+    def test_mocks(self):
+        with patch("pandas.read_sql") as read_sql_mock:
+            read_sql_mock.return_value = "mock DF"
+            print(utils.generate_df("file.csv", "query"))
+            self.assertEqual("mock DF", utils.generate_df("file.csv", "query"))
 
 if __name__ == "__main__":
     unittest.main()
