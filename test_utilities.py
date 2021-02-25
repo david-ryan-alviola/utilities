@@ -2,7 +2,7 @@ import unittest
 import utilities as utils
 
 from unittest.mock import patch
-from pandas import read_sql
+from pydataset import data
 
 class TestUtilityFunctions(unittest.TestCase):
 
@@ -118,15 +118,11 @@ class TestUtilityFunctions(unittest.TestCase):
         with self.assertRaises(ValueError):
             utils.generate_csv_url("www.google.com")
 
-    # def test_generate_df_not_cached_positive(self):
-    #     utils.generate_df("file.csv", "query", cached=False)
-
-    
-    def test_mocks(self):
-        with patch("pandas.read_sql") as read_sql_mock:
-            read_sql_mock.return_value = "mock DF"
-            print(utils.generate_df("file.csv", "query"))
-            self.assertEqual("mock DF", utils.generate_df("file.csv", "query"))
+    @patch("pandas.read_sql", return_value=data("iris"))
+    @patch("pandas.DataFrame.to_csv", return_value="file.csv")
+    def test_generate_df_not_cached_positive(self, mock_read_sql, mock_to_csv):
+        self.assertEqual(data("iris").Species.all(), 
+            utils.generate_df("file.csv", "query", "db_url", cached=False).Species.all())
 
 if __name__ == "__main__":
     unittest.main()
