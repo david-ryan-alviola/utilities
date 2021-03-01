@@ -60,6 +60,8 @@ class TestUtilityFunctions(unittest.TestCase):
         self.assertTrue(result['reject_null'])
         self.assertEqual(result['message'], self.reject_null_message)
         self.assertEqual(result['correlation'], "positive")
+        # used to test bug where alternative hypothesis was being printed instead of alpha value
+        self.assertEqual(0.05, result['a'])
 
     def test_evalutate_hypothesis_pcorrelation_fail_to_reject_null_positive_corr(self):
         result = utils.evaluate_hypothesis_pcorrelation(1, .06)
