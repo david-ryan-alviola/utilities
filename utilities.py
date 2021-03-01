@@ -38,7 +38,7 @@ def evaluate_hypothesis_ttest(p_value, t_value, alpha = .05, tails = "two", null
     def reject_null_hypothesis():
         return f"We reject the null hypothesis. We move forward with the alternative hypothesis:  {alternative_hypothesis}"
 
-    result = {}
+    result = {'t' :  t_value, 'p' :  p_value, 'a' :  alpha}
 
     print("------------------------------------------")
     print(f"t:  {t_value}, p:  {p_value}, a:  {alpha}")
@@ -149,7 +149,7 @@ def evaluate_hypothesis_pcorrelation(correlation, p_value, alpha = .05, null_hyp
     print(f"corr:  {correlation}, p:  {p_value}, a:  {alternative_hypothesis}")
     print()
 
-    result = {}
+    result = {'corr' :  correlation, 'p' :  p_value, 'a' :  alpha}
 
     if correlation > 1 or correlation < -1:
         raise ValueError("The correlation must be between -1 and 1")
