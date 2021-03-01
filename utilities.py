@@ -1,3 +1,5 @@
+import pandas as pd
+
 def evaluate_hypothesis_ttest(p_value, t_value, alpha = .05, tails = "two", null_hypothesis = "", alternative_hypothesis = ""):
     """
     Utility function to evaluate T-test hypothesis
@@ -200,3 +202,14 @@ def generate_csv_url(sheet_url):
             raise ValueError("sheet_url must contain 'edit#gid' phrase")
     else:
         raise TypeError("sheet_url must be a string")
+
+def generate_df(file_name, query="", db_url="", cached=True):
+    df = pd.DataFrame()
+
+    if cached:
+        print("cached")
+    else:
+        df = pd.read_sql(query, db_url)
+        df.to_csv(file_name)
+
+    return df 
