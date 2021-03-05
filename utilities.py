@@ -1,3 +1,6 @@
+import pandas as pd
+import os
+
 def evaluate_hypothesis_ttest(p_value, t_value, alpha = .05, tails = "two", null_hypothesis = "", alternative_hypothesis = ""):
     """
     Utility function to evaluate T-test hypothesis
@@ -200,3 +203,38 @@ def generate_csv_url(sheet_url):
             raise ValueError("sheet_url must contain 'edit#gid' phrase")
     else:
         raise TypeError("sheet_url must be a string")
+
+def generate_df(file_name, query="", db_url="", cached=True):
+    """
+    Utilty function for generating a dataframe
+
+    This function generates a dataframe either from an existing CSV file or from the provided query and database connection.
+    If the CSV with the file_name is present, the dataframe will be generated from the CSV file, otherwise the dataframe
+    will be generated from the database result and a CSV file will be created with the provided file_name. This behavior
+    can be overridden if cached is set to False.
+
+    Parameters
+    ----------
+    file_name : str
+        The name of the file
+    query : str, optional
+        The query for the data. Empty string by default.
+    db_url : str, optional
+        URL for database connection. Empty string by default.
+    cached : bool, optional
+        Indicates whether or not dataframe should be generated from existing CSV file. Default is True.
+
+    Returns
+    -------
+    DataFrame
+        Dataframe containing the data from CSV or query
+    """
+    file_present = os.path.isfile(file_name)
+
+    if cached and file_present:
+        df = pd.read_csv(file_name)
+    else:
+        df = pd.read_sql(query, db_url)
+        df.to_csv(file_name)
+
+    return df 
