@@ -1,6 +1,8 @@
 import pandas as pd
 import os
 
+from sklearn.model_selection import train_test_split
+
 def evaluate_hypothesis_ttest(p_value, t_value, alpha = .05, tails = "two", null_hypothesis = "", alternative_hypothesis = ""):
     """
     Utility function to evaluate T-test hypothesis
@@ -237,4 +239,39 @@ def generate_df(file_name, query="", db_url="", cached=True):
         df = pd.read_sql(query, db_url)
         df.to_csv(file_name)
 
-    return df 
+    return df
+
+def split_dataframe(df, stratify_by=None, rand=1414, test_size=.2, validate_size=.3):
+    """
+    Crude train, validate, test split
+    To stratify, send in a column name
+    """
+    
+    if stratify_by == None:
+        train, test = train_test_split(df, test_size=test_size, random_state=rand)
+        train, validate = train_test_split(train, test_size=validate_size, random_state=rand)
+    else:
+        train, test = train_test_split(df, test_size=test_size, random_state=rand, stratify=df[stratify_by])
+        train, validate = train_test_split(train, test_size=validate_size, random_state=rand, stratify=train[stratify_by])
+
+    return train, validate, test
+
+def generate_xy_splits(train, validate, test, target, drop_columns=[]):
+    """
+    """
+
+    result = {}
+
+    if target not in drop_columns:
+        drop_columns.append(target)
+
+    result['X_train'] = train.drop(columns=drop_columns)
+    result['y_train'] = train[target]
+
+    result['X_validate'] = validate.drop(columns=drop_columns)
+    result['y_validate'] = validate[target]
+
+    result['X_test'] = test.drop(columns=drop_columns)
+    result['y_test'] = test[target]
+
+    return result
