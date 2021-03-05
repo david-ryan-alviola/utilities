@@ -122,9 +122,16 @@ class TestUtilityFunctions(unittest.TestCase):
 
     @patch("pandas.read_sql", return_value=data("iris"))
     @patch("pandas.DataFrame.to_csv", return_value="file.csv")
-    def test_generate_df_not_cached_positive(self, mock_read_sql, mock_to_csv):
+    @patch("os.path.isfile", return_value=True)
+    def test_generate_df_not_cached_positive(self, mock_read_sql, mock_to_csv, mock_isfile):
         self.assertEqual(data("iris").Species.all(), 
             utils.generate_df("file.csv", "query", "db_url", cached=False).Species.all())
+
+    @patch("pandas.read_csv", return_value=data("iris"))
+    @patch("os.path.isfile", return_value=True)
+    def test_generate_df_cached_positive(self, mock_read_csv, mock_isfile):
+        self.assertEqual(data("iris").Species.all(),
+            utils.generate_df("file.csv").Species.all())
 
 if __name__ == "__main__":
     unittest.main()
