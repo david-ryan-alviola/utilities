@@ -243,8 +243,28 @@ def generate_df(file_name, query="", db_url="", cached=True):
 
 def split_dataframe(df, stratify_by=None, rand=1414, test_size=.2, validate_size=.3):
     """
-    Crude train, validate, test split
-    To stratify, send in a column name
+    Utility function to create train, validate, and test splits.
+
+    Generates train, validate, and test samples from a dataframe.
+    Credit to @ryanorsinger
+
+    Parameters
+    ----------
+    df : DataFrame
+        The dataframe to be split
+    stratify_by : str
+        Name of the target variable. Ensures different results of target variable are spread between the samples. Default is None.
+    test_size : float
+        Ratio of dataframe (0.0 to 1.0) that should be kept for testing sample. Default is 0.2.
+    validate_size: float
+        Ratio of train sample (0.0 to 1.0) that should be kept for validate sample. Default is 0.3.
+    random_stat : int
+        Value provided to create re-produceable results. Default is 1414.
+
+    Returns
+    -------
+    DataFrame
+        Three dataframes representing the training, validate, and test samples
     """
     
     if stratify_by == None:
@@ -258,6 +278,27 @@ def split_dataframe(df, stratify_by=None, rand=1414, test_size=.2, validate_size
 
 def generate_xy_splits(train, validate, test, target, drop_columns=[]):
     """
+    Utility function that splits samples into X and y values.
+
+    This function removes the target variable and any other columns from the dataframe to prepare for model fitting.
+
+    Parameters
+    ----------
+    train : DataFrame
+        The training sample.
+    validate : DataFrame
+        The validate sample.
+    test : DataFrame
+        The test sample.
+    target : str
+        The target variable name.
+    drop_columns : list of str
+        List containing the names of columns to drop.
+
+    Returns
+    -------
+    dict
+        Dictionary containing the different splits with keys:  'X_train', 'y_train', 'X_validate', 'y_validate', 'X_test', 'y_test'
     """
 
     result = {}
@@ -266,12 +307,12 @@ def generate_xy_splits(train, validate, test, target, drop_columns=[]):
         drop_columns.append(target)
 
     result['X_train'] = train.drop(columns=drop_columns)
-    result['y_train'] = train[target]
+    result['y_train'] = train[[target]]
 
     result['X_validate'] = validate.drop(columns=drop_columns)
-    result['y_validate'] = validate[target]
+    result['y_validate'] = validate[[target]]
 
     result['X_test'] = test.drop(columns=drop_columns)
-    result['y_test'] = test[target]
+    result['y_test'] = test[[target]]
 
     return result
