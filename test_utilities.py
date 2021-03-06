@@ -133,5 +133,29 @@ class TestUtilityFunctions(unittest.TestCase):
         self.assertEqual(data("iris").Species.all(),
             utils.generate_df("file.csv").Species.all())
 
+    def test_generate_xy_splits_positive(self):
+        train, validate, test = utils.split_dataframe(data("iris"))
+        result = utils.generate_xy_splits(train, validate, test, target="Species")
+
+        self.assertEqual(["X_train", "y_train", "X_validate", "y_validate", "X_test", "y_test"],
+            list(result.keys()))
+        self.assertFalse("Species" in result['X_train'])
+        self.assertFalse("Species" in result['X_validate'])
+        self.assertFalse("Species" in result['X_test'])
+        self.assertTrue("Species" in result['y_train'])
+        self.assertTrue("Species" in result['y_validate'])
+        self.assertTrue("Species" in result['y_test'])
+
+    def test_generate_xy_splits_drop_columns_positive(self):
+        train, validate, test = utils.split_dataframe(data("iris"))
+        result = utils.generate_xy_splits(train, validate, test, target="Species", drop_columns=["Sepal.Width", "Petal.Width"])
+
+        self.assertFalse("Sepal.Width" in result['X_train'])
+        self.assertFalse("Sepal.Width" in result['X_validate'])
+        self.assertFalse("Sepal.Width" in result['X_test'])
+        self.assertFalse("Petal.Width" in result['X_train'])
+        self.assertFalse("Petal.Width" in result['X_validate'])
+        self.assertFalse("Petal.Width" in result['X_test'])
+
 if __name__ == "__main__":
     unittest.main()
