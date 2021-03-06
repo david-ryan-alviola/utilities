@@ -32,5 +32,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas
           pip install pydataset
+          pip install -U scikit-learn
       - name: Run unit tests
         run: python test_utilities.py
