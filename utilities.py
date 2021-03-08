@@ -150,7 +150,7 @@ def evaluate_hypothesis_pcorrelation(correlation, p_value, alpha = .05, null_hyp
         return f"We reject the null hypothesis. We move forward with the alternative hypothesis:  {alternative_hypothesis}"
 
     print("------------------------------------------")
-    print(f"corr:  {correlation}, p:  {p_value}, a:  {alternative_hypothesis}")
+    print(f"corr:  {correlation}, p:  {p_value}, a:  {alpha}")
     print()
 
     result = {'corr' :  correlation, 'p' :  p_value, 'a' :  alpha}
