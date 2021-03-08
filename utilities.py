@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import os
 
 from sklearn.model_selection import train_test_split
@@ -314,5 +315,28 @@ def generate_xy_splits(train, validate, test, target, drop_columns=[]):
 
     result['X_test'] = test.drop(columns=drop_columns)
     result['y_test'] = test[[target]]
+
+    return result
+
+def nan_null_empty_check(df):
+    """
+    Utility function that checks for missing values in a dataframe.
+
+    This function will return a tuple containing the positions of NaN, None, NaT, or empty strings.
+
+    Parameters
+    ----------
+    df : DataFrame
+        The dataframe that you want to search.
+    
+    Returns
+    -------
+    tuple
+        A tuple containing coordinates of the missing values:  ([rows], [columns])
+    """
+    result = {}
+    
+    result['nan_positions'] = np.where(pd.isna(df))
+    result['empty_positions'] = np.where(df.applymap(lambda x: str(x).strip() == ""))
 
     return result

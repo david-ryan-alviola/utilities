@@ -1,5 +1,7 @@
 import unittest
 import utilities as utils
+import numpy as np
+import pandas as pd
 
 from unittest.mock import patch
 from pydataset import data
@@ -8,6 +10,7 @@ class TestUtilityFunctions(unittest.TestCase):
 
     reject_null_message = "We reject the null hypothesis. We move forward with the alternative hypothesis:  "
     fail_to_reject_null_message = "We fail to reject the null hypothesis:  "
+    test_df = pd.DataFrame(columns=['A', 'B', 'C', 'D'], data=[["value", np.nan, None, "   "]])
 
     def test_generate_db_url(self):
         self.assertEqual(utils.generate_db_url("user", "password", "h.o.s.t", "db_name", "my_favorite_protocol"),
@@ -156,6 +159,15 @@ class TestUtilityFunctions(unittest.TestCase):
         self.assertFalse("Petal.Width" in result['X_train'])
         self.assertFalse("Petal.Width" in result['X_validate'])
         self.assertFalse("Petal.Width" in result['X_test'])
+
+    def test_nan_null_empty_check(self):
+        expected = {'nan_positions' : (np.array([0, 0]), np.array([1, 2])), 'empty_positions' : (np.array([0]), np.array([3]))}
+        result = utils.nan_null_empty_check(self.test_df)
+        
+        self.assertEqual(expected['nan_positions'][0].all(), result['nan_positions'][0].all())
+        self.assertEqual(expected['nan_positions'][1].all(), result['nan_positions'][1].all())
+        self.assertEqual(expected['empty_positions'][0].all(), result['empty_positions'][0].all())
+        self.assertEqual(expected['empty_positions'][1].all(), result['empty_positions'][1].all())
 
 if __name__ == "__main__":
     unittest.main()
