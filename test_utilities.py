@@ -145,9 +145,9 @@ class TestUtilityFunctions(unittest.TestCase):
         self.assertFalse("Species" in result['X_train'])
         self.assertFalse("Species" in result['X_validate'])
         self.assertFalse("Species" in result['X_test'])
-        self.assertTrue("Species" in result['y_train'])
-        self.assertTrue("Species" in result['y_validate'])
-        self.assertTrue("Species" in result['y_test'])
+        self.assertIsNotNone(result['y_train'])
+        self.assertIsNotNone(result['y_validate'])
+        self.assertIsNotNone(result['y_test'])
 
     def test_generate_xy_splits_drop_columns_positive(self):
         train, validate, test = utils.split_dataframe(data("iris"))
