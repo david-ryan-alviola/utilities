@@ -4,6 +4,7 @@ import os
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix
+from explore import explore_univariate, explore_bivariate, explore_multivariate
 
 def evaluate_hypothesis_ttest(p_value, t_value, alpha = .05, tails = "two", null_hypothesis = "", alternative_hypothesis = ""):
     """
@@ -364,3 +365,21 @@ def get_metrics_bin(clf, X, y):
     The True Negative Rate is {tnr:.3}, and the False Negative Rate is {fnr:.3}
     ''')
     return class_report
+
+def explore_one_dimension(train, cat_vars, quant_vars):
+    """
+    Wrapper for @magsguist explore_univariate function
+    """
+    explore_univariate(train, cat_vars, quant_vars)
+
+def explore_two_dimensions(train, target, cat_vars, quant_vars):
+    """
+    Wrapper for @magsguist explore_bivariate function
+    """
+    explore_bivariate(train, target, cat_vars, quant_vars)
+
+def explore_three_dimension(train, target, cat_vars, quant_vars):
+    """
+    Wrapper for @magsguist explore_multivariate function
+    """
+    explore_multivariate(train, target, cat_vars, quant_vars)
