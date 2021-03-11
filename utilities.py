@@ -378,7 +378,7 @@ def explore_two_dimensions(train, target, cat_vars, quant_vars):
     """
     explore_bivariate(train, target, cat_vars, quant_vars)
 
-def explore_three_dimension(train, target, cat_vars, quant_vars):
+def explore_three_dimensions(train, target, cat_vars, quant_vars):
     """
     Wrapper for @magsguist explore_multivariate function
     """
