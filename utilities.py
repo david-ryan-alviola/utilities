@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix
 from explore.explore_utils import explore_univariate, explore_bivariate, explore_multivariate
+from acquire.acquire_utils import generate_csv_url, generate_db_url, generate_df
 
 def _fail_to_reject_null_hypothesis(null_hypothesis):
     return f"We fail to reject the null hypothesis:  {null_hypothesis}"
