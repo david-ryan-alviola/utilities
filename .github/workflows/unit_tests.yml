@@ -37,4 +37,8 @@ jobs:
           pip install -U matplotlib
           pip install seaborn
       - name: Run unit tests
-        run: python test_utilities.py
+        run: |
+          python acquisition/test_acquire_utils.py
+          python preparation/test_prepare_utils.py
+          python exploration/test_stats_utils.py
+          python modeling/test_model_utils.py
