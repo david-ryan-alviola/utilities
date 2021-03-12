@@ -1,5 +1,5 @@
-from acquire.acquire_utils import generate_csv_url, generate_db_url, generate_df
+from acquisition.acquire_utils import generate_csv_url, generate_db_url, generate_df
 from preparation.prepare_utils import nan_null_empty_check, split_dataframe
-from explore.explore_utils import explore_univariate, explore_bivariate, explore_multivariate
-from explore.stats_utils import evaluate_hypothesis_pcorrelation, evaluate_hypothesis_ttest
-from model.model_utils import generate_xy_splits, get_metrics_bin
+from exploration.explore_utils import explore_univariate, explore_bivariate, explore_multivariate
+from exploration.stats_utils import evaluate_hypothesis_pcorrelation, evaluate_hypothesis_ttest
+from modeling.model_utils import generate_xy_splits, get_metrics_bin
