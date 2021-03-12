@@ -1,24 +1,10 @@
 import unittest
-import utilities as utils
-import numpy as np
-import pandas as pd
+import stats_utils as utils
 
-from unittest.mock import patch
-from pydataset import data
-
-class TestUtilityFunctions(unittest.TestCase):
+class TestStatsUtils(unittest.TestCase):
 
     reject_null_message = "We reject the null hypothesis. We move forward with the alternative hypothesis:  "
     fail_to_reject_null_message = "We fail to reject the null hypothesis:  "
-    test_df = pd.DataFrame(columns=['A', 'B', 'C', 'D'], data=[["value", np.nan, None, "   "]])
-
-    def test_generate_db_url(self):
-        self.assertEqual(utils.generate_db_url("user", "password", "h.o.s.t", "db_name", "my_favorite_protocol"),
-        "my_favorite_protocol://user:password@h.o.s.t/db_name")
-
-    def test_generate_db_url_default_protocol(self):
-        self.assertEqual(utils.generate_db_url("user", "password", "h.o.s.t", "db_name"),
-        "mysql+pymysql://user:password@h.o.s.t/db_name")
 
     def test_evaluate_hypothesis_ttest_two_tailed_reject_null(self):
         result = utils.evaluate_hypothesis_ttest(.01, 14)
@@ -110,64 +96,6 @@ class TestUtilityFunctions(unittest.TestCase):
         
         with self.assertRaises(ValueError):
             utils.evaluate_hypothesis_pcorrelation(14, .06)
-
-    def test_generate_csv_url_positive(self):
-        self.assertEqual(
-            utils.generate_csv_url("https://docs.google.com/spreadsheets/d/1Uhtml8KY19LILuZsrDtlsHHDC9wuDGUSe8LTEwvdI5g/edit#gid=1234"), 
-            "https://docs.google.com/spreadsheets/d/1Uhtml8KY19LILuZsrDtlsHHDC9wuDGUSe8LTEwvdI5g/export?format=csv&gid=1234")
-
-    def test_generate_csv_url_negative(self):
-        with self.assertRaises(TypeError):
-            utils.generate_csv_url(14398)
-
-        with self.assertRaises(ValueError):
-            utils.generate_csv_url("www.google.com")
-
-    @patch("pandas.read_sql", return_value=data("iris"))
-    @patch("pandas.DataFrame.to_csv", return_value="file.csv")
-    @patch("os.path.isfile", return_value=True)
-    def test_generate_df_not_cached_positive(self, mock_read_sql, mock_to_csv, mock_isfile):
-        self.assertEqual(data("iris").Species.all(), 
-            utils.generate_df("file.csv", "query", "db_url", cached=False).Species.all())
-
-    @patch("pandas.read_csv", return_value=data("iris"))
-    @patch("os.path.isfile", return_value=True)
-    def test_generate_df_cached_positive(self, mock_read_csv, mock_isfile):
-        self.assertEqual(data("iris").Species.all(),
-            utils.generate_df("file.csv").Species.all())
-
-    def test_generate_xy_splits_positive(self):
-        train, validate, test = utils.split_dataframe(data("iris"))
-        result = utils.generate_xy_splits(train, validate, test, target="Species")
-
-        self.assertEqual(["X_train", "y_train", "X_validate", "y_validate", "X_test", "y_test"],
-            list(result.keys()))
-        self.assertFalse("Species" in result['X_train'])
-        self.assertFalse("Species" in result['X_validate'])
-        self.assertFalse("Species" in result['X_test'])
-        self.assertIsNotNone(result['y_train'])
-        self.assertIsNotNone(result['y_validate'])
-        self.assertIsNotNone(result['y_test'])
-
-    def test_generate_xy_splits_drop_columns_positive(self):
-        train, validate, test = utils.split_dataframe(data("iris"))
-        result = utils.generate_xy_splits(train, validate, test, target="Species", drop_columns=["Sepal.Width", "Petal.Width"])
-
-        self.assertFalse("Sepal.Width" in result['X_train'])
-        self.assertFalse("Sepal.Width" in result['X_validate'])
-        self.assertFalse("Sepal.Width" in result['X_test'])
-        self.assertFalse("Petal.Width" in result['X_train'])
-        self.assertFalse("Petal.Width" in result['X_validate'])
-        self.assertFalse("Petal.Width" in result['X_test'])
-
-    def test_nan_null_empty_check(self):
-        expected = {'nan_positions' : (np.array([0, 0]), np.array([1, 2])), 'empty_positions' : (np.array([0]), np.array([3]))}
-        result = utils.nan_null_empty_check(self.test_df)
-        
-        self.assertEqual(expected['nan_positions'][0].all(), result['nan_positions'][0].all())
-        self.assertEqual(expected['nan_positions'][1].all(), result['nan_positions'][1].all())
-        self.assertEqual(expected['empty_positions'][0].all(), result['empty_positions'][0].all())
-        self.assertEqual(expected['empty_positions'][1].all(), result['empty_positions'][1].all())
 
 if __name__ == "__main__":
     unittest.main()
