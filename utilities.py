@@ -1,10 +1,9 @@
 import pandas as pd
-import numpy as np
 
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix
-from explore.explore_utils import explore_univariate, explore_bivariate, explore_multivariate
 from acquire.acquire_utils import generate_csv_url, generate_db_url, generate_df
+from prepare.prepare_utils import nan_null_empty_check, split_dataframe
+from explore.explore_utils import explore_univariate, explore_bivariate, explore_multivariate
 
 def _fail_to_reject_null_hypothesis(null_hypothesis):
     return f"We fail to reject the null hypothesis:  {null_hypothesis}"
@@ -151,41 +150,6 @@ def evaluate_hypothesis_pcorrelation(correlation, p_value, alpha = .05, null_hyp
 
         return result
 
-def split_dataframe(df, stratify_by=None, rand=1414, test_size=.2, validate_size=.3):
-    """
-    Utility function to create train, validate, and test splits.
-
-    Generates train, validate, and test samples from a dataframe.
-    Credit to @ryanorsinger
-
-    Parameters
-    ----------
-    df : DataFrame
-        The dataframe to be split
-    stratify_by : str
-        Name of the target variable. Ensures different results of target variable are spread between the samples. Default is None.
-    test_size : float
-        Ratio of dataframe (0.0 to 1.0) that should be kept for testing sample. Default is 0.2.
-    validate_size: float
-        Ratio of train sample (0.0 to 1.0) that should be kept for validate sample. Default is 0.3.
-    random_stat : int
-        Value provided to create re-produceable results. Default is 1414.
-
-    Returns
-    -------
-    DataFrame
-        Three dataframes representing the training, validate, and test samples
-    """
-    
-    if stratify_by == None:
-        train, test = train_test_split(df, test_size=test_size, random_state=rand)
-        train, validate = train_test_split(train, test_size=validate_size, random_state=rand)
-    else:
-        train, test = train_test_split(df, test_size=test_size, random_state=rand, stratify=df[stratify_by])
-        train, validate = train_test_split(train, test_size=validate_size, random_state=rand, stratify=train[stratify_by])
-
-    return train, validate, test
-
 def generate_xy_splits(train, validate, test, target, drop_columns=[]):
     """
     Utility function that splits samples into X and y values.
@@ -224,29 +188,6 @@ def generate_xy_splits(train, validate, test, target, drop_columns=[]):
 
     result['X_test'] = test.drop(columns=drop_columns)
     result['y_test'] = test[target]
-
-    return result
-
-def nan_null_empty_check(df):
-    """
-    Utility function that checks for missing values in a dataframe.
-
-    This function will return a tuple containing the positions of NaN, None, NaT, or empty strings.
-
-    Parameters
-    ----------
-    df : DataFrame
-        The dataframe that you want to search.
-    
-    Returns
-    -------
-    tuple
-        A tuple containing coordinates of the missing values:  ([rows], [columns])
-    """
-    result = {}
-    
-    result['nan_positions'] = np.where(pd.isna(df))
-    result['empty_positions'] = np.where(df.applymap(lambda x: str(x).strip() == ""))
 
     return result
 
