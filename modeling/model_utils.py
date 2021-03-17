@@ -2,7 +2,7 @@ import pandas as pd
 
 from sklearn.metrics import classification_report, confusion_matrix
 
-def generate_xy_splits(train, validate, test, target, drop_columns=[]):
+def generate_xy_splits(train, validate, test, target, drop_columns=None):
     """
     Utility function that splits samples into X and y values.
 
@@ -28,17 +28,21 @@ def generate_xy_splits(train, validate, test, target, drop_columns=[]):
     """
 
     result = {}
+    columns = []
 
-    if target not in drop_columns:
-        drop_columns.append(target)
+    if (drop_columns != None):
+        columns = drop_columns.copy()
 
-    result['X_train'] = train.drop(columns=drop_columns)
+    if target not in columns:
+        columns.append(target)
+
+    result['X_train'] = train.drop(columns=columns)
     result['y_train'] = train[target]
 
-    result['X_validate'] = validate.drop(columns=drop_columns)
+    result['X_validate'] = validate.drop(columns=columns)
     result['y_validate'] = validate[target]
 
-    result['X_test'] = test.drop(columns=drop_columns)
+    result['X_test'] = test.drop(columns=columns)
     result['y_test'] = test[target]
 
     return result
