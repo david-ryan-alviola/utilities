@@ -55,8 +55,20 @@ def nan_null_empty_check(df):
         A tuple containing coordinates of the missing values:  ([rows], [columns])
     """
     result = {}
-    
+
     result['nan_positions'] = np.where(pd.isna(df))
     result['empty_positions'] = np.where(df.applymap(lambda x: str(x).strip() == ""))
 
+    _print_positions(result['nan_positions'], "NaN values")
+    _print_positions(result['empty_positions'], "Empty values")
+
     return result
+
+def _print_positions(result, position_type):
+    print(position_type)
+
+    rows = pd.DataFrame(data=result[0], columns=['rows'])
+    columns = pd.DataFrame(data=result[1], columns=['columns'])
+
+    print(pd.concat([rows, columns], axis=1))
+    print("--------------------------------")
