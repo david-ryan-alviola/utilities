@@ -1,5 +1,6 @@
 import unittest
 import model_utils as utils
+import pandas as pd
 
 from pydataset import data
 from sklearn.model_selection import train_test_split
@@ -22,6 +23,9 @@ class TestModelUtils(unittest.TestCase):
         self.assertIsNotNone(result['y_train'])
         self.assertIsNotNone(result['y_validate'])
         self.assertIsNotNone(result['y_test'])
+        self.assertEqual(pd.DataFrame, type(result['y_train']))
+        self.assertEqual(pd.DataFrame, type(result['y_validate']))
+        self.assertEqual(pd.DataFrame, type(result['y_test']))
 
     def test_generate_xy_splits_drop_columns_positive(self):
         result = utils.generate_xy_splits(self.train, self.validate, self.test, target="Species", drop_columns=["Sepal.Width", "Petal.Width"])

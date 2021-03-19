@@ -37,13 +37,13 @@ def generate_xy_splits(train, validate, test, target, drop_columns=None):
         columns.append(target)
 
     result['X_train'] = train.drop(columns=columns)
-    result['y_train'] = train[target]
+    result['y_train'] = pd.DataFrame(train[target])
 
     result['X_validate'] = validate.drop(columns=columns)
-    result['y_validate'] = validate[target]
+    result['y_validate'] = pd.DataFrame(validate[target])
 
     result['X_test'] = test.drop(columns=columns)
-    result['y_test'] = test[target]
+    result['y_test'] = pd.DataFrame(test[target])
 
     return result
 
