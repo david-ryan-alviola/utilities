@@ -85,6 +85,6 @@ def generate_df(file_name, query="", db_url="", cached=True):
         df = pd.read_csv(file_name)
     else:
         df = pd.read_sql(query, db_url)
-        df.to_csv(file_name)
+        df.to_csv(file_name, index=False)
 
     return df
