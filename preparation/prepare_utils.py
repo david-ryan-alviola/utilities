@@ -38,7 +38,7 @@ def split_dataframe(df, stratify_by=None, rand=1414, test_size=.2, validate_size
 
     return train, validate, test
 
-def split_dataframe_continuous_target(df, target, bins=5, rand=1414, test_size=.2, validate_size=.3):
+def split_dataframe_continuous_target(dframe, target, bins=5, rand=1414, test_size=.2, validate_size=.3):
     """
     Utility function to create train, validate, and test splits when targeting a continuous variable.
 
@@ -63,6 +63,7 @@ def split_dataframe_continuous_target(df, target, bins=5, rand=1414, test_size=.
     DataFrame
         Three dataframes representing the training, validate, and test samples
     """
+    df = dframe.copy()
     binned_y = pd.cut(df[target], bins=bins, labels=list(range(bins)))
     df["bins"] = binned_y
 
