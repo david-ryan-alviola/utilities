@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 
 from sklearn.model_selection import train_test_split
+from sklearn.feature_selection import SelectKBest, RFE, f_regression
+from sklearn.preprocessing import MinMaxScaler
 
 def split_dataframe(df, stratify_by=None, rand=1414, test_size=.2, validate_size=.3):
     """
@@ -110,3 +112,66 @@ def _print_positions(result, position_type):
 
     print(pd.concat([rows, columns], axis=1))
     print("--------------------------------")
+
+def generate_outlier_bounds(df, column, multiplier=1.5):
+    """
+    Takes in a dataframe, the column name, and can specify a multiplier (default=1.5). Returns the upper and lower bounds for the
+    values in that column that signify outliers.
+    """
+    q1 = df[column].quantile(.25)
+    q3 = df[column].quantile(.75)
+    iqr = q3 - q1
+
+    upper = q3 + (multiplier * iqr)
+    lower = q1 - (multiplier * iqr)
+
+    return upper, lower
+
+def generate_scaled_splits(train, validate, test, scaler=MinMaxScaler()):
+    """
+    Takes in a train, validate, test samples and can specify the type of scaler to use (default=MinMaxScaler). Returns the samples
+    after scaling as dataframes.
+    """
+    scaler.fit(train)
+
+    train_scaled = pd.DataFrame(scaler.transform(train), columns=train.columns)
+    validate_scaled = pd.DataFrame(scaler.transform(validate), columns=validate.columns)
+    test_scaled = pd.DataFrame(scaler.transform(test), columns=test.columns)
+
+    return train_scaled, validate_scaled, test_scaled
+
+def rfe(predictors, targets, model_type, k=1):
+    """
+    Takes in a a dataframe of predictors (ie X_train), the dataframe of targets (ie y_train), the type of model, and can specify 
+    the amount of features you want (default k=1). Returns a list ordered by most important to least important feature. The top
+    features will be assigned a rank of 1 (ie if k=2, there will be 2 features with a rank of 1).
+    """
+    model = model_type
+    
+    rfe = RFE(model, k)
+    rfe.fit(predictors, targets)
+
+    rfe_feature_mask = rfe.support_
+    
+    _print_ranks(rfe, predictors)
+
+    return predictors.iloc[:, rfe_feature_mask].columns.tolist()
+
+def select_kbest(predictors, targets, k=1):
+    """
+    Takes in a a dataframe of predictors (ie X_train), the dataframe of targets (ie y_train), and can specify 
+    the amount of features you want (default k=1). Returns a list ordered by most important to least important feature.
+    """
+    f_selector = SelectKBest(f_regression, k=k)
+    f_selector.fit(predictors, targets)
+
+    feature_mask = f_selector.get_support()
+
+    return predictors.iloc[:, feature_mask].columns.tolist()
+
+def _print_ranks(selector, predictors):
+    var_ranks = selector.ranking_
+    var_names = predictors.columns.tolist()
+
+    rfe_ranks_df = pd.DataFrame({'Var': var_names, 'Rank': var_ranks})
+    print(rfe_ranks_df.sort_values('Rank'))
