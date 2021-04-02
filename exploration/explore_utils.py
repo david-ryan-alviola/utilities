@@ -14,13 +14,71 @@ def explore_univariate(train, cat_vars, quant_vars):
         p, descriptive_stats = _explore_univariate_quant(train, col)
         plt.show(p)
         print(descriptive_stats)
+
+def explore_bivariate_categorical(target, cat_vars, train):
+    """
+    Takes in a target and plots it against categorial variables. Outputs boxplots and barplots and gives the mean of the target
+    by each categorical variable.
+    """
+    for var in cat_vars:
+        _print_header(var, target)
+
+        sns.boxplot(x=var, y=target, data=train)
+        plt.show()
+
+        print()
+
+        sns.barplot(x=var, y=target, data=train)
+        plt.show()
         
+        print("-------------------------------")
+        print(f"Mean {target} by {var}:  ")
+        print(train.groupby(var)[target].mean())
+        print()
+
+def explore_bivariate_continuous(target, cont_vars, train):
+    """
+    Takes in a target and plots it against continuous variables. Outputs a relplot and calculates the corrleation value between
+    the target and each continuous variable.
+    """
+    for var in cont_vars:
+        _print_header(var, target)
+        
+        sns.relplot(x=var, y=target, data=train)
+        plt.show()
+        corr, p = stats.pearsonr(train[var], train[target])
+        
+        print("-------------------------------")
+        print(f"Correlation between {var} and {target}:  {corr}")
+        print(f"P value:  {p}")
+        print()
+
+def explore_multivariate_(cont_vars, cat_vars, target, train):
+    """
+    Takes in a target and continuous and categorical variables. Outputs a relplot of each continuous variable against the target
+    with each categorical varible as the hue.
+    """
+    for cont_var in cont_vars:
+        _print_header(cont_var, target)
+        
+        for cat_var in cat_vars:
+            sns.relplot(x=cont_var, y=target, hue=cat_var, data=train)
+            plt.title(f"By {cat_var}")
+            plt.show()
+            print()
+
+def _print_header(var, target):
+    print(f"{var} vs {target}")
+    print("-------------------------------")
+
+@DeprecationWarning
 def explore_bivariate(train, target, cat_vars, quant_vars):
     for cat in cat_vars:
         _explore_bivariate_categorical(train, target, cat)
     for quant in quant_vars:
         _explore_bivariate_quant(train, target, quant)
 
+@DeprecationWarning
 def explore_multivariate(train, target, cat_vars, quant_vars):
     '''
     '''
