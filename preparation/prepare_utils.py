@@ -175,3 +175,47 @@ def _print_ranks(selector, predictors):
 
     rfe_ranks_df = pd.DataFrame({'Var': var_names, 'Rank': var_ranks})
     print(rfe_ranks_df.sort_values('Rank'))
+
+def show_missing_value_stats_by_col(df):
+    """
+    Takes in a data frame and returns information on missing values in each column.
+    """
+    cols = df.columns
+    rows = len(df)
+    result = pd.DataFrame(index=cols, columns=['num_rows_missing', 'pct_rows_missing'])
+    pd.set_option('max_rows', rows)
+    
+    result['num_rows_missing'] = df.isnull().sum()
+    result['pct_rows_missing'] = round(df.isnull().sum() / rows, 6)
+    
+    return result
+
+def show_missing_value_stats_by_row(df):
+    """
+    Takes in a data frame and returns information on missing values in each row.
+    """
+    total_cols = df.shape[1]
+    total_rows = df.shape[0]
+    result = pd.DataFrame(df.isnull().sum(axis=1).value_counts(), columns=['num_rows'])
+    pd.set_option('max_rows', total_rows)
+    
+    result = result.reset_index()
+    result = result.rename(columns={'index' : 'num_cols_missing'})
+    result['pct_cols_missing'] = result['num_cols_missing'] / total_cols
+    result = result.set_index('num_cols_missing')
+    result = result.sort_values('num_cols_missing', ascending=True)
+    
+    return result
+
+def handle_missing_values(df, col_thresh, row_thresh):
+    """
+    Takes in a data frame and thresholds (0.0 - 1.0) for columns and rows and returns the data frame after dropping the rows and
+    columns that are not populated at the specified threshold amounts.
+    """
+    req_col = int(round(col_thresh * len(df.index), 0))
+    req_row = int(round(row_thresh * len(df.columns), 0))
+    
+    df = df.dropna(axis=1, thresh=req_col)
+    df = df.dropna(axis=0, thresh=req_row)
+    
+    return df
