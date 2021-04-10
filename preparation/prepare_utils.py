@@ -76,7 +76,7 @@ def split_dataframe_continuous_target(dframe, target, bins=5, rand=1414, test_si
     validate = validate.drop(columns=["bins"])
     test = test.drop(columns=["bins"])
     
-    return train, test, validate
+    return train, validate, test
 
 def nan_null_empty_check(df):
     """
