@@ -219,3 +219,14 @@ def handle_missing_values(df, col_thresh, row_thresh):
     df = df.dropna(axis=0, thresh=req_row)
     
     return df
+
+def set_index_to_datetime(df, column_name):
+    """
+    Takes in a dataframe and the column name of a column containing string values formatted as dates. This function converts the
+    column to a pandas.Datetime object and sets as the index of the dataframe then returns the dataframe sorted by index.
+    """
+    date_df = df.copy()
+
+    date_df[column_name] = pd.to_datetime(sasebo_df[column_name])
+
+    return date_df.set_index(column_name).sort_index()
