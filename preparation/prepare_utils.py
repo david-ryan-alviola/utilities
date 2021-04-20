@@ -227,6 +227,6 @@ def set_index_to_datetime(df, column_name):
     """
     date_df = df.copy()
 
-    date_df[column_name] = pd.to_datetime(sasebo_df[column_name])
+    date_df[column_name] = pd.to_datetime(date_df[column_name])
 
     return date_df.set_index(column_name).sort_index()
