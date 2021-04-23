@@ -113,6 +113,7 @@ def _print_positions(result, position_type):
     print(pd.concat([rows, columns], axis=1))
     print("--------------------------------")
 
+@DeprecationWarning("Use generate_outlier_bounds_iqr")
 def generate_outlier_bounds(df, column, multiplier=1.5):
     """
     Takes in a dataframe, the column name, and can specify a multiplier (default=1.5). Returns the upper and lower bounds for the
@@ -230,3 +231,46 @@ def set_index_to_datetime(df, column_name):
     date_df[column_name] = pd.to_datetime(date_df[column_name])
 
     return date_df.set_index(column_name).sort_index()
+
+def generate_outlier_bounds_iqr(df, column, multiplier=1.5):
+    """
+    Takes in a dataframe, the column name, and can specify a multiplier (default=1.5). Returns the upper and lower bounds for the
+    values in that column that signify outliers.
+    """
+    q1 = df[column].quantile(.25)
+    q3 = df[column].quantile(.75)
+    iqr = q3 - q1
+
+    upper = q3 + (multiplier * iqr)
+    lower = q1 - (multiplier * iqr)
+
+    return upper, lower
+
+def find_outliers_with_sigma(df, cols, sigma):
+    """
+    Generates a dictionary containing the lower and upper bounds indicating outliers for the given variables determined with the sigma decision rule.
+
+    Parameters
+    ----------
+    df : DataFrame
+        The dataframe containing the variables
+    cols : list of strings
+        List containing the key names of the variables to calculate outlier bounds for
+
+    Returns
+    -------
+    dict
+        Dictionary containing the outlier bounds where each key is the column name of the variable.
+    """
+
+    outliers_dict = {}
+    
+    for col in cols:
+        x = df[col]
+
+        zscores = pd.Series((x - x.mean()) / x.std())
+        outliers = x[zscores.abs() >= sigma]
+        
+        outliers_dict[col + "_outliers"] = outliers
+    
+    return outliers_dict
