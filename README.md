@@ -7,9 +7,13 @@
 * Stable
     1. Download the release you wish to use.
     2. Unzip to the project directory where you will be using `utilities.py`
-* Current
+* Current (Recommended)
     1. Clone this repository
-    2. Remove ".dist" from the `env.py.dist` file
-    3. Set up your `env.py` with the correct settings for your environment
+    2. If you do not have your own `env.py`:
+        1. Remove ".template" from the `env.py.template` file
+        2. Set up your `env.py` with the correct settings for your environment
+    3. If you have an `env.py`, add the following to your file:
+        * `import sys`
+        * `sys.path.append("/path/to/utilities")`
+            * Replace "/path/to/utilities" with the absolute path to the repository
 * Import to your notebook or module using:  `import utilities` or `from utilities import...`
-* If you do not want to keep copying `utilities.py` to every new exercise repository, read about importing files in other folders [here](https://stackoverflow.com/questions/24868733/how-to-access-a-module-from-outside-your-file-folder-in-python).
