@@ -1,6 +1,12 @@
 import pandas as pd
 import numpy as np
+import unicodedata
+import re
+import json
+import nltk
 
+from nltk.tokenize.toktok import ToktokTokenizer
+from nltk.corpus import stopwords
 from sklearn.model_selection import train_test_split
 from sklearn.feature_selection import SelectKBest, RFE, f_regression
 from sklearn.preprocessing import MinMaxScaler
@@ -259,3 +265,77 @@ def find_outliers_with_sigma(df, cols, sigma):
         outliers_dict[col + "_outliers"] = outliers
     
     return outliers_dict
+
+def nlp_basic_clean(string):
+    """
+    Lowercases, removes non-ASCII characters, and removes non-alphanumeric (except ' or \s') from the passed in string.
+    """
+    
+    cleaned_string = string
+    
+    cleaned_string = cleaned_string.lower()
+    cleaned_string = unicodedata.normalize("NFKD", cleaned_string).encode("ascii", "ignore").decode("utf-8", "ignore")
+    cleaned_string = re.sub(r"[^a-z0-9'\s]", "", cleaned_string)
+    
+    return cleaned_string
+
+def nlp_tokenize(string):
+    """
+    Applies the ToktokTokenizer.tokenize() method to the passed in string.
+    """
+    
+    tokenized_string = string
+    tokenizer = nltk.tokenize.ToktokTokenizer()
+    
+    return tokenizer.tokenize(tokenized_string, return_str=True)
+
+def nlp_stem(string):
+    """
+    Generates a list of the stem for each word in the original string and returns the joined list of stems as a single string.
+    """
+    
+    ps = nltk.porter.PorterStemmer()
+    
+    stems = [ps.stem(word) for word in string.split()]
+    
+    return " ".join(stems)
+
+def nlp_lemmatize(string):
+    """
+    Generates a list of the root word for each word in the original string and returns the joined list of root words as a single string.
+    """
+    
+    wnl = nltk.stem.WordNetLemmatizer()
+    
+    lemmas = [wnl.lemmatize(word) for word in string.split()]
+    
+    return " ".join(lemmas)
+
+def nlp_remove_stopwords(string, extra_words=None, exclude_words=None):
+    """
+    Generates a list of stop words then adds and/or removes the specified words from that stop word list. Any words from the \
+    original string that are not present in the stop word list are added to the filtered word list. Returns the joined filtered word \
+    list as a single string.
+    """
+    
+    stopword_list = stopwords.words("english")
+    extras = []
+    excludes = []
+    
+    if extra_words != None:
+        extras = extra_words.copy()
+        
+    if exclude_words != None:
+        excludes = exclude_words.copy()
+    
+    for extra_word in extras:
+        if extra_word not in stopword_list:
+            stopword_list.append(extra_word)
+        
+    for exclude_word in excludes:
+        if exclude_word in stopword_list:
+            stopword_list.remove(exclude_word)
+
+    filtered_words = [word for word in string.split() if word not in stopword_list]
+    
+    return " ".join(filtered_words)
