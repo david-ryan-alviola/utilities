@@ -36,6 +36,7 @@ jobs:
           pip install numpy
           pip install -U matplotlib
           pip install seaborn
+          pip install nltk
       - name: Run unit tests
         run: |
           python acquisition/test_acquire_utils.py
