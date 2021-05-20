@@ -6,7 +6,7 @@ from preparation.prepare_utils import nan_null_empty_check, split_dataframe, spl
     nlp_remove_stopwords, nlp_tokenize
 
 from exploration.explore_utils import explore_univariate, explore_bivariate, explore_multivariate, explore_bivariate_categorical, \
-    explore_bivariate_continuous, explore_multivariate_
+    explore_bivariate_continuous, explore_multivariate_, idf, generate_tf_idf_tfidf_dataframe
 
 from exploration.stats_utils import evaluate_hypothesis_pcorrelation, evaluate_hypothesis_ttest
 
