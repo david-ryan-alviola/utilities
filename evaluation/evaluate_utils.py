@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from statsmodels.formula.api import ols
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, classification_report, accuracy_score
 from math import sqrt
 
 def _compare_sum_squared_errors(model_sse2, baseline_sse2):
@@ -76,3 +76,11 @@ def _print_comparison(model_errors, baseline_errors):
     print("----------------------------------------------")
     print(pd.DataFrame(index=baseline_errors.keys(), columns=["baseline"], data=baseline_errors.values()))
     print("----------------------------------------------")
+
+def print_model_evaluation(sample_df, prediction_key):
+    print('Accuracy: {:.2%}'.format(accuracy_score(sample_df.actual, sample_df[prediction_key])))
+    print('---')
+    print('Confusion Matrix')
+    print(pd.crosstab(sample_df[prediction_key], sample_df.actual))
+    print('---')
+    print(classification_report(sample_df.actual, sample_df[prediction_key]))
