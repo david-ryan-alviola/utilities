@@ -19,4 +19,4 @@ from modeling.anomaly_detection_utils import generate_column_counts_df, generate
     generate_conditional_probability_df, visualize_target_counts
 
 from evaluation.evaluate_utils import plot_residuals, plot_residuals_against_x, regression_errors, baseline_mean_errors, \
-    better_than_baseline, model_signficance, print_model_evalutation
+    better_than_baseline, model_signficance, print_model_evaluation
